@@ -339,15 +339,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 
 <script>
 var K=atob('c2stb3ItdjEtMjljNzdlZTBjMTFlZDU5ZTExNDZiM2E2NTRlYWYyNjZhYjZlNGM5NzdiOTU2YTU1ZjJkZTFlZTcyNjQyMTRiYQ==');
-var H=['eeb1866d4559006f','904bfc256067d1b5','bee381cdf11834b2','9672e8a09afcbc13','a21035422a316549','591b28411d43d4e1'];
+var H=['eeb1866d4559006f','904bfc256067d1b5','bee381cdf11834b2','9672e8a09afcbc13','a21035422a316549','f08cc9e29a642f2e'];
 var API='https://openrouter.ai/api/v1/chat/completions';
 var FM='openai/gpt-3.5-turbo',PM='openai/gpt-4o';
 var DAILY_LIMIT=50;
 
 var isReg=true,plan='free',cid=null,convs={},busy=false,pimgs=[];
 
-function SHA256(s){function R(n,x){return(x>>>n)|(x<<(32-n))}function Ch(x,y,z){return(x&y)^(~x&z)}function Maj(x,y,z){return(x&y)^(x&z)^(y&z)}function Sigma0(x){return R(x,2)^R(x,13)^R(x,22)}function Sigma1(x){return R(x,6)^R(x,11)^R(x,25)}function Gamma0(x){return R(x,7)^R(x,18)^(x>>>3)}function Gamma1(x){return R(x,17)^R(x,19)^(x>>>10)}function Hex(n){var h='';for(var i=7;i>=0;i--){h+=((n>>>(i*4))&0xf).toString(16)}return h}var K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];var l=s.length*8;var m=[];for(var i=0;i<l;i+=8)m[i>>3]=(s.charCodeAt(i/8)<<(24-i%8))&0xff000000|m[i>>3];m[l>>3]=0x80;m[((l+64>>>9)<<4)+15]=l;var h1=0x6a09e667,h2=0xbb67ae85,h3=0x3c6ef372,h4=0xa54ff53a,h5=0x510e527f,h6=0x9b05688c,h7=0x1f83d9ab,h8=0x5be0cd19;for(var j=0;j<m.length;j+=16){var w=[];for(var i=0;i<16;i++)w[i]=m[j+i];for(var i=16;i<64;i++)w[i]=(Gamma1(w[i-2])+w[i-7]+Gamma0(w[i-15])+w[i-16])&0xffffffff;var a=h1,b=h2,c=h3,d=h4,e=h5,f=h6,g=h7,h=h8;for(var i=0;i<64;i++){var T1=(h+Sigma1(e)+Ch(e,f,g)+K[i]+w[i])&0xffffffff;var T2=(Sigma0(a)+Maj(a,b,c))&0xffffffff;h=g;g=f;f=e;e=(d+T1)&0xffffffff;d=c;c=b;b=a;a=(T1+T2)&0xffffffff}h1=(h1+a)&0xffffffff;h2=(h2+b)&0xffffffff;h3=(h3+c)&0xffffffff;h4=(h4+d)&0xffffffff;h5=(h5+e)&0xffffffff;h6=(h6+f)&0xffffffff;h7=(h7+g)&0xffffffff;h8=(h8+h)&0xffffffff}return Hex(h1)+Hex(h2)+Hex(h3)+Hex(h4)+Hex(h5)+Hex(h6)+Hex(h7)+Hex(h8)}
-function _v(c){return H.indexOf(SHA256(c).substring(0,16))!==-1}
+async function sha256hex(message){var msgBuffer=new TextEncoder().encode(message);var hashBuffer=await crypto.subtle.digest('SHA-256',msgBuffer);var hashArray=Array.from(new Uint8Array(hashBuffer));return hashArray.map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
+async function _v(c){var h=(await sha256hex(c)).substring(0,16);return H.indexOf(h)!==-1}
 
 function getToday(){return new Date().toISOString().split('T')[0]}
 function getCount(){var uid=localStorage.getItem('eai_user');if(!uid)return 0;var k='eai_cnt_'+uid+'_'+getToday();return parseInt(localStorage.getItem(k)||'0')}
@@ -468,11 +468,11 @@ function pickPlan(p){
   document.getElementById('premModal').classList.add('act');
 }
 function closePremModal(){document.getElementById('premModal').classList.remove('act')}
-function activatePro(){
+async function activatePro(){
   var code=document.getElementById('premCode').value.trim();
   var err=document.getElementById('premErr');
   if(!code){err.textContent='Enter a code';err.style.display='block';return}
-  if(!_v(code)){err.textContent='Invalid code';err.style.display='block';return}
+  if(!(await _v(code))){err.textContent='Invalid code';err.style.display='block';return}
   var uid=localStorage.getItem('eai_user');
   var users={};try{users=JSON.parse(localStorage.getItem('eai_users')||'{}')}catch(e){}
   if(users[uid]){users[uid].plan='pro';localStorage.setItem('eai_users',JSON.stringify(users))}
