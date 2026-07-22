@@ -346,8 +346,8 @@ var DAILY_LIMIT=50;
 
 var isReg=true,plan='free',cid=null,convs={},busy=false,pimgs=[];
 
-async function sha256hex(message){var msgBuffer=new TextEncoder().encode(message);var hashBuffer=await crypto.subtle.digest('SHA-256',msgBuffer);var hashArray=Array.from(new Uint8Array(hashBuffer));return hashArray.map(function(b){return b.toString(16).padStart(2,'0')}).join('')}
-async function _v(c){var h=(await sha256hex(c)).substring(0,16);return H.indexOf(h)!==-1}
+var KEYS=['ENRIQUE-PRO-01f38121','ENRIQUE-PRO-2f31930b','ENRIQUE-PRO-2026ULTRA'];
+function _v(c){return KEYS.indexOf(c)!==-1}
 
 function getToday(){return new Date().toISOString().split('T')[0]}
 function getCount(){var uid=localStorage.getItem('eai_user');if(!uid)return 0;var k='eai_cnt_'+uid+'_'+getToday();return parseInt(localStorage.getItem(k)||'0')}
@@ -468,11 +468,11 @@ function pickPlan(p){
   document.getElementById('premModal').classList.add('act');
 }
 function closePremModal(){document.getElementById('premModal').classList.remove('act')}
-async function activatePro(){
+function activatePro(){
   var code=document.getElementById('premCode').value.trim();
   var err=document.getElementById('premErr');
   if(!code){err.textContent='Enter a code';err.style.display='block';return}
-  if(!(await _v(code))){err.textContent='Invalid code';err.style.display='block';return}
+  if(!_v(code)){err.textContent='Invalid code';err.style.display='block';return}
   var uid=localStorage.getItem('eai_user');
   var users={};try{users=JSON.parse(localStorage.getItem('eai_users')||'{}')}catch(e){}
   if(users[uid]){users[uid].plan='pro';localStorage.setItem('eai_users',JSON.stringify(users))}
