@@ -335,7 +335,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 
 <script>
 var K=atob('c2stb3ItdjEtMjljNzdlZTBjMTFlZDU5ZTExNDZiM2E2NTRlYWYyNjZhYjZlNGM5NzdiOTU2YTU1ZjJkZTFlZTcyNjQyMTRiYQ==');
-var H=['eeb1866d4559006f','904bfc256067d1b5','bee381cdf11834b2','9672e8a09afcbc13','a21035422a316549'];
+var H=['eeb1866d4559006f','904bfc256067d1b5','bee381cdf11834b2','9672e8a09afcbc13','a21035422a316549','f08cc9e29a642f2e'];
 var API='https://openrouter.ai/api/v1/chat/completions';
 var FM='openai/gpt-3.5-turbo',PM='openai/gpt-4o';
 var DAILY_LIMIT=50;
@@ -577,7 +577,7 @@ async function send(){
   }
   busy=true;document.getElementById('sendBtn').disabled=true;input.value='';autoResize(input);
   loadC();
-  if(!cid){cid=gid();convs[cid]=[{role:'system',content:'You are ENRIQUE AI by ENRIQUE. Help with coding, writing, math, translation, image analysis. Format with Markdown. Be helpful, concise, and friendly.'}]}
+  if(!cid){cid=gid();convs[cid]=[{role:'system',content:plan==='pro'?'You are ENRIQUE AI Pro by ENRIQUE. You are an advanced AI assistant with full capabilities. You can: create complete websites (HTML/CSS/JS), write complex code in any programming language, build web apps, do advanced math, translate languages, analyze images, explain concepts, write essays, debug code, and more. When asked to build something, provide COMPLETE working code. Format with Markdown code blocks. Be thorough and friendly.':'You are ENRIQUE AI by ENRIQUE. Help with coding, writing, math, translation, image analysis. Format with Markdown. Be helpful, concise, and friendly.'}]}
   convs[cid].push({role:'user',content:msg});
   addMsg('user',pimgs.length?msg+' (🖼️ '+pimgs.length+')':msg);
   renderList();
