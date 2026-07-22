@@ -244,14 +244,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
       <div class="pi">🆓</div>
       <h3>Free</h3>
       <div class="pr">$0 <span>/ forever</span></div>
-      <ul><li>50 messages per day</li><li>GPT-3.5 model</li><li>Image upload</li><li>Code highlighting</li></ul>
+      <ul><li>50 messages per day</li><li>ENRIQUE AI model</li><li>Image upload</li><li>Code highlighting</li></ul>
       <button class="pbtn free">Start Free →</button>
     </div>
     <div class="plan pop" onclick="pickPlan('pro')">
       <div class="pi">⭐</div>
       <h3>Premium</h3>
       <div class="pr">$9.99 <span>/ month</span></div>
-      <ul><li>Unlimited messages</li><li>GPT-4o & Claude 3.5</li><li>Advanced analysis</li><li>Priority speed</li></ul>
+      <ul><li>Unlimited messages</li><li>ENRIQUE AI Pro & Claude 3.5</li><li>Advanced analysis</li><li>Priority speed</li></ul>
       <button class="pbtn pro">Get Premium →</button>
     </div>
   </div>
@@ -264,7 +264,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
   <div class="om-box">
     <div style="font-size:28px;margin-bottom:6px">⭐</div>
     <h2>Activate Premium</h2>
-    <p>Enter your premium code to unlock GPT-4o.</p>
+    <p>Enter your premium code to unlock ENRIQUE AI Pro.</p>
     <div class="err2" id="premErr"></div>
     <input type="text" id="premCode" placeholder="ENRIQUE-PRO-XXXX">
     <button class="ok" onclick="activatePro()">Activate</button>
@@ -297,7 +297,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
       <h2 id="chatTitle">New Chat</h2>
     </div>
     <div class="hr">
-      <span class="mb" id="modelBadge"><span class="dot"></span> GPT-3.5</span>
+      <span class="mb" id="modelBadge"><span class="dot"></span> ENRIQUE AI</span>
       <button class="ub show" id="upgradeBtn" onclick="pickPlan('pro')">⭐ Upgrade</button>
     </div>
   </div>
@@ -449,11 +449,11 @@ function updatePlanUI(){
   var ubtn=document.getElementById('upgradeBtn');
   if(plan==='pro'){
     badge.textContent='PRO';badge.className='pb2 pro';
-    badge2.innerHTML='<span class="dot"></span> GPT-4o';
+    badge2.innerHTML='<span class="dot"></span> ENRIQUE AI Pro';
     ubtn.style.display='none';
   }else{
     badge.textContent='FREE';badge.className='pb2 free';
-    badge2.innerHTML='<span class="dot"></span> GPT-3.5';
+    badge2.innerHTML='<span class="dot"></span> ENRIQUE AI';
     ubtn.style.display='inline-block';
   }
 }
