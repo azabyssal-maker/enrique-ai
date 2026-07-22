@@ -1,4 +1,4 @@
-<!-- v1784738616 -->
+<!-- v1784738942 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -408,7 +408,7 @@ function doAuth(){
   }else{
     var users={};try{users=JSON.parse(localStorage.getItem('eai_users')||'{}')}catch(e){}
     var found=Object.keys(users).find(function(k){return users[k].email===email&&users[k].pass===pass});
-    if(!found){showErr('Invalid email or password');return}
+    if(!found){showErr('User not found. Please register first.');return}
     localStorage.setItem('eai_user',found);
     plan=users[found].plan||'free';
     enterLanding();
@@ -581,7 +581,7 @@ async function send(){
   }
   busy=true;document.getElementById('sendBtn').disabled=true;input.value='';autoResize(input);
   loadC();
-  if(!cid){cid=gid();convs[cid]=[{role:'system',content:plan==='pro'?'You are ENRIQUE AI Pro by ENRIQUE. You are an advanced AI assistant with full capabilities. You can: create complete websites (HTML/CSS/JS), write complex code in any programming language, build web apps, do advanced math, translate languages, analyze images, explain concepts, write essays, debug code, and more. When asked to build something, provide COMPLETE working code. Format with Markdown code blocks. Be thorough and friendly.':'You are ENRIQUE AI by ENRIQUE. Help with coding, writing, math, translation, image analysis. Format with Markdown. Be helpful, concise, and friendly.'}]}
+  if(!cid){cid=gid();convs[cid]=[{role:'system',content:plan==='pro'?'You are ENRIQUE AI Pro, an expert AI assistant specialized in coding and website creation. You can: 1) CREATE complete websites with HTML, CSS, JavaScript - provide FULL working code in code blocks. 2) BUILD web apps, mobile apps, games. 3) WRITE any programming language. 4) DEBUG and OPTIMIZE code. 5) EXPLAIN complex concepts. 6) DO advanced math and science. 7) TRANSLATE between languages. 8) ANALYZE images. When asked to build/create something, ALWAYS provide COMPLETE, WORKING code that can be copied and used directly. Format code with language tags. Be detailed, thorough, and helpful.':'You are ENRIQUE AI, a helpful AI assistant. You can help with coding, writing, math, translation, image analysis, creating simple websites, and answering questions. Format responses with Markdown including code blocks when relevant. Be helpful, concise, and friendly.'}]}
   convs[cid].push({role:'user',content:msg});
   addMsg('user',pimgs.length?msg+' (🖼️ '+pimgs.length+')':msg);
   renderList();
