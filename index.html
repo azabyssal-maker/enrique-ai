@@ -21,6 +21,31 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',-apple-syst
 .particles span{position:absolute;width:3px;height:3px;background:var(--primary);border-radius:50%;opacity:.12;animation:drift linear infinite}
 @keyframes drift{0%{transform:translateY(100vh);opacity:0}10%{opacity:.12}90%{opacity:.12}100%{transform:translateY(-10vh);opacity:0}}
 
+
+/* AUTH */
+.auth{position:fixed;inset:0;z-index:700;display:flex;align-items:center;justify-content:center;background:var(--bg);padding:20px}
+.auth.hidden{display:none!important}
+.auth-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px 28px;width:100%;max-width:400px;text-align:center}
+.auth-box .emoji{font-size:42px;margin-bottom:14px}
+.auth-box h2{font-size:22px;font-weight:800;margin-bottom:4px}
+.auth-box p{color:var(--muted);font-size:13px;margin-bottom:20px}
+.auth-box input{width:100%;padding:12px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;margin-bottom:10px;transition:.2s}
+.auth-box input:focus{border-color:var(--primary)}
+.auth-box .btn{width:100%;padding:12px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;transition:.2s;margin-bottom:8px}
+.auth-box .btn.primary{background:linear-gradient(135deg,var(--primary),#a855f7);color:#fff}
+.auth-box .btn.secondary{background:transparent;color:var(--primary);border:1px solid var(--primary)}
+.auth-box .btn:active{transform:scale(.98)}
+.auth-box .switch{font-size:12px;color:var(--muted);margin-top:12px}
+.auth-box .switch a{color:var(--primary);cursor:pointer;text-decoration:none}
+.auth-box .err{color:var(--red);font-size:11px;margin-bottom:8px;display:none;background:rgba(255,71,87,.08);border:1px solid rgba(255,71,87,.2);border-radius:8px;padding:7px}
+.auth-box .plan-select{display:flex;gap:10px;margin:16px 0}
+.auth-box .plan-opt{flex:1;padding:14px 8px;background:var(--bg);border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:.2s;text-align:center}
+.auth-box .plan-opt:active{transform:scale(.97)}
+.auth-box .plan-opt.selected{border-color:var(--primary);background:rgba(124,92,255,.08)}
+.auth-box .plan-opt .icon{font-size:24px;margin-bottom:4px}
+.auth-box .plan-opt .name{font-size:13px;font-weight:700}
+.auth-box .plan-opt .desc{font-size:10px;color:var(--muted);margin-top:2px}
+
 /* LANDING */
 .landing{position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;align-items:center;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
 .landing.hidden{display:none!important}
@@ -182,6 +207,21 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',-apple-syst
 <body>
 <div class="particles" id="particles"></div>
 
+
+<div class="auth" id="authScreen">
+  <div class="auth-box">
+    <div class="emoji">🤖</div>
+    <h2 id="authTitle">Create Account</h2>
+    <p id="authDesc">Join ENRIQUE AI to start chatting</p>
+    <div class="err" id="authErr"></div>
+    <input type="text" id="authName" placeholder="Username" style="display:none">
+    <input type="email" id="authEmail" placeholder="Email">
+    <input type="password" id="authPass" placeholder="Password">
+    <button class="btn primary" id="authBtn" onclick="doAuth()">Sign Up</button>
+    <p class="switch" id="authSwitch">Already have an account? <a onclick="toggleAuth()">Login</a></p>
+  </div>
+</div>
+
 <div class="landing" id="landing">
   <div class="lh">
     <div class="ll">🤖</div>
@@ -235,6 +275,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',-apple-syst
   <button class="nc" onclick="newChat()">✨ New Chat</button>
   <div class="cl" id="convList"></div>
   <div class="sp"><button onclick="exportChat()">📥 Export</button></div>
+  <div class="sp"><button onclick="logout()" style="border-color:var(--red);color:var(--red)">🚪 Logout</button></div>
   <div class="sf">ENRIQUE AI v3.0</div>
 </aside>
 
@@ -289,8 +330,8 @@ var _h=['eeb1866d4559006f','904bfc256067d1b5','bee381cdf11834b2','9672e8a09afcbc
 var API_URL='https://openrouter.ai/api/v1/chat/completions';
 var FREE_MODEL='openai/gpt-3.5-turbo';
 var PRO_MODEL='openai/gpt-4o';
-var plan=localStorage.getItem('eai_plan')||'';
-var cid=null;var convs=JSON.parse(localStorage.getItem('eai_conv')||'{}');var busy=false;var pendingImages=[];
+var plan='';
+var cid=null;var convs={};var busy=false;var pendingImages=[];
 
 marked.setOptions({highlight:function(c,l){return l&&hljs.getLanguage(l)?hljs.highlight(c,{language:l}).value:hljs.highlightAuto(c).value},breaks:true,gfm:true});
 
@@ -300,8 +341,8 @@ marked.setOptions({highlight:function(c,l){return l&&hljs.getLanguage(l)?hljs.hi
 function SHA256(s){function R(n,x){return(x>>>n)|(x<<(32-n))}function Ch(x,y,z){return(x&y)^(~x&z)}function Maj(x,y,z){return(x&y)^(x&z)^(y&z)}function Sigma0(x){return R(x,2)^R(x,13)^R(x,22)}function Sigma1(x){return R(x,6)^R(x,11)^R(x,25)}function Gamma0(x){return R(x,7)^R(x,18)^(x>>>3)}function Gamma1(x){return R(x,17)^R(x,19)^(x>>>10)}function Hex(n){var h='';for(var i=7;i>=0;i--){h+=((n>>>(i*4))&0xf).toString(16)}return h}var K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];var l=s.length*8;var m=[];for(var i=0;i<l;i+=8)m[i>>3]=(s.charCodeAt(i/8)<<(24-i%8))&0xff000000|m[i>>3];m[l>>3]=0x80;m[((l+64>>>9)<<4)+15]=l;var h1=0x6a09e667,h2=0xbb67ae85,h3=0x3c6ef372,h4=0xa54ff53a,h5=0x510e527f,h6=0x9b05688c,h7=0x1f83d9ab,h8=0x5be0cd19;for(var j=0;j<m.length;j+=16){var w=[];for(var i=0;i<16;i++)w[i]=m[j+i];for(var i=16;i<64;i++)w[i]=(Gamma1(w[i-2])+w[i-7]+Gamma0(w[i-15])+w[i-16])&0xffffffff;var a=h1,b=h2,c=h3,d=h4,e=h5,f=h6,g=h7,h=h8;for(var i=0;i<64;i++){var T1=(h+Sigma1(e)+Ch(e,f,g)+K[i]+w[i])&0xffffffff;var T2=(Sigma0(a)+Maj(a,b,c))&0xffffffff;h=g;g=f;f=e;e=(d+T1)&0xffffffff;d=c;c=b;b=a;a=(T1+T2)&0xffffffff}h1=(h1+a)&0xffffffff;h2=(h2+b)&0xffffffff;h3=(h3+c)&0xffffffff;h4=(h4+d)&0xffffffff;h5=(h5+e)&0xffffffff;h6=(h6+f)&0xffffffff;h7=(h7+g)&0xffffffff;h8=(h8+h)&0xffffffff}return Hex(h1)+Hex(h2)+Hex(h3)+Hex(h4)+Hex(h5)+Hex(h6)+Hex(h7)+Hex(h8)}
 
 function _v(c){var h=SHA256(c).substring(0,16);return _h.indexOf(h)!==-1}
-function pickPlan(p){if(p==='pro'){document.getElementById('premModal').classList.add('show');return;}plan='free';localStorage.setItem('eai_plan','free');document.getElementById('landing').classList.add('hidden');enterApp();}
-function activatePro(){var code=document.getElementById('premCode').value.trim().toUpperCase();if(!code){showErr('Enter a code');return;}if(!_v(code)){showErr('Invalid code');return;}plan='pro';localStorage.setItem('eai_plan','pro');document.getElementById('premModal').classList.remove('show');document.getElementById('landing').classList.add('hidden');enterApp();}
+function pickPlan(p){if(p==='pro'){document.getElementById('premModal').classList.add('show');return;}plan='free';if(currentUser&&users[currentUser]){users[currentUser].plan='free';localStorage.setItem('eai_users',JSON.stringify(users));}localStorage.setItem('eai_plan','free');document.getElementById('landing').classList.add('hidden');enterApp();}
+function activatePro(){var code=document.getElementById('premCode').value.trim().toUpperCase();if(!code){showErr('Enter a code');return;}if(!_v(code)){showErr('Invalid code');return;}plan='pro';if(currentUser&&users[currentUser]){users[currentUser].plan='pro';localStorage.setItem('eai_users',JSON.stringify(users));}localStorage.setItem('eai_plan','pro');document.getElementById('premModal').classList.remove('show');document.getElementById('landing').classList.add('hidden');enterApp();}
 function showErr(m){var e=document.getElementById('premErr');e.textContent=m;e.style.display='block';}
 function closePremModal(){document.getElementById('premModal').classList.remove('show');}
 function enterApp(){document.getElementById('sidebar').classList.remove('hid');document.getElementById('mainArea').classList.remove('hid');var isPro=plan==='pro';document.getElementById('planBadge').className='pb2 '+(isPro?'pro':'free');document.getElementById('planBadge').textContent=isPro?'PRO':'FREE';document.getElementById('modelBadge').innerHTML='<span class="dot"></span> '+(isPro?'GPT-4o':'GPT-3.5');document.getElementById('modelBadge').className='mb'+(isPro?' pro':'');document.getElementById('upgradeBtn').className='ub'+(!isPro?' show':'');renderList();}
@@ -395,7 +436,87 @@ async function send(){
   }catch(e){aiDiv.querySelector('.mt').innerHTML='<div class="er">⚠️ '+esc(e.message)+'</div>'}
   busy=false;document.getElementById('sendBtn').disabled=false;input.focus();
 }
-if(plan&&plan!=='')enterApp();
+
+// AUTH SYSTEM
+var isLogin=false;
+var users=JSON.parse(localStorage.getItem('eai_users')||'{}');
+var currentUser=localStorage.getItem('eai_user')||'';
+
+function toggleAuth(){
+  isLogin=!isLogin;
+  document.getElementById('authTitle').textContent=isLogin?'Welcome Back':'Create Account';
+  document.getElementById('authDesc').textContent=isLogin?'Login to continue':'Join ENRIQUE AI';
+  document.getElementById('authName').style.display=isLogin?'none':'block';
+  document.getElementById('authBtn').textContent=isLogin?'Login':'Sign Up';
+  document.getElementById('authSwitch').innerHTML=isLogin?'Don't have an account? <a onclick="toggleAuth()">Sign Up</a>':'Already have an account? <a onclick="toggleAuth()">Login</a>';
+  document.getElementById('authErr').style.display='none';
+}
+
+function doAuth(){
+  var name=document.getElementById('authName').value.trim();
+  var email=document.getElementById('authEmail').value.trim();
+  var pass=document.getElementById('authPass').value;
+  var err=document.getElementById('authErr');
+  
+  if(!email||!pass){showAuthErr('Please fill all fields');return;}
+  if(!isLogin&&!name){showAuthErr('Please enter username');return;}
+  
+  if(isLogin){
+    // Login
+    var uid=Object.keys(users).find(function(id){return users[id].email===email&&users[id].pass===pass});
+    if(!uid){showAuthErr('Invalid email or password');return;}
+    currentUser=uid;
+  }else{
+    // Register
+    if(Object.values(users).find(function(u){return u.email===email})){showAuthErr('Email already used');return;}
+    var uid='u'+Date.now().toString(36);
+    users[uid]={name:name,email:email,pass:pass,plan:'free'};
+    currentUser=uid;
+  }
+  
+  localStorage.setItem('eai_users',JSON.stringify(users));
+  localStorage.setItem('eai_user',currentUser);
+  loadUserPlan();
+}
+
+function showAuthErr(m){var e=document.getElementById('authErr');e.textContent=m;e.style.display='block';}
+
+function loadUserPlan(){
+  if(!currentUser||!users[currentUser]){showAuth();return;}
+  plan=users[currentUser].plan||'free';
+  localStorage.setItem('eai_plan',plan);
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('landing').classList.add('hidden');
+  enterApp();
+}
+
+function showAuth(){
+  document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('landing').classList.add('hidden');
+}
+
+function logout(){
+  currentUser='';
+  localStorage.removeItem('eai_user');
+  convs={};localStorage.removeItem('eai_conv');
+  document.getElementById('mainArea').classList.add('hid');
+  document.getElementById('sidebar').classList.add('hid');
+  document.getElementById('landing').classList.add('hidden');
+  showAuth();
+}
+
+// Override enterApp to save plan to user
+var origEnterApp=enterApp;
+enterApp=function(){
+  origEnterApp();
+  if(currentUser&&users[currentUser]){
+    users[currentUser].plan=plan;
+    localStorage.setItem('eai_users',JSON.stringify(users));
+  }
+};
+
+// Check login
+if(currentUser&&users[currentUser]){loadUserPlan();}else if(plan&&plan!==''){document.getElementById('authScreen').classList.add('hidden');enterApp();}else{showAuth();}
 document.getElementById('premModal').addEventListener('click',function(e){if(e.target===this)closePremModal()});
 </script>
 </body>
