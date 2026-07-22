@@ -1,4 +1,4 @@
-<!-- v1784737845 -->
+<!-- v1784738322 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -338,7 +338,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 </main>
 
 <script>
-var K=atob('c2stb3ItdjEtMjljNzdlZTBjMTFlZDU5ZTExNDZiM2E2NTRlYWYyNjZhYjZlNGM5NzdiOTU2YTU1ZjJkZTFlZTcyNjQyMTRiYQ==');
+var K=atob('c2stb3ItdjEtMjljNzdlZTBjMTFlZDU5ZTExNDZiM2E2NTRlYWYyNjZhYjZlNGM5NzdiOTU2YTU1ZjJkZTFlZTcyNjQyMTRiYQ==');var KP=atob('c2stb3ItdjEtNGMyOTQ0NzZkOTRiMDBiMmEyODYwZjE2MDgwODliNjJjZTY2YjE4OTA2NTMzNDJiMmEyMjEwYWJhNDI0MDBkOQ==');
 var H=['eeb1866d4559006f','904bfc256067d1b5','bee381cdf11834b2','9672e8a09afcbc13','a21035422a316549','f08cc9e29a642f2e'];
 var API='https://openrouter.ai/api/v1/chat/completions';
 var FM='openai/gpt-3.5-turbo',PM='openai/gpt-4o';
@@ -599,7 +599,7 @@ async function send(){
   });
   try{
     var body={model:imgs.length?PM:model,messages:apiMsgs,stream:true,temperature:0.7,max_tokens:4000};
-    var r=await fetch(API,{method:'POST',headers:{'Authorization':'Bearer '+K,'Content-Type':'application/json','HTTP-Referer':'https://enrique-ai.github.io','X-Title':'ENRIQUE AI'},body:JSON.stringify(body)});
+    var r=await fetch(API,{method:'POST',headers:{'Authorization':'Bearer '+(plan==='pro'?KP:K),'Content-Type':'application/json','HTTP-Referer':'https://enrique-ai.github.io','X-Title':'ENRIQUE AI'},body:JSON.stringify(body)});
     if(!r.ok){var er=await r.json().catch(function(){return{error:'Error'}});throw new Error(er.error?.message||'Error '+r.status)}
     var reader=r.body.getReader(),dec=new TextDecoder(),full='',buf='';
     while(true){var res=await reader.read();if(res.done)break;buf+=dec.decode(res.value,{stream:true});var lines=buf.split('\n');buf=lines.pop()||'';for(var i=0;i<lines.length;i++){var line=lines[i];if(!line.startsWith('data: '))continue;var d=line.slice(6).trim();if(d==='[DONE]'){convs[cid].push({role:'assistant',content:full});save();addCount();updateCounter();continue}try{var j=JSON.parse(d);if(j.error)throw new Error(typeof j.error==='string'?j.error:j.error.message);var c=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(c){full+=c;aiDiv.querySelector('.mt').innerHTML=marked.parse(full);aiDiv.querySelectorAll('pre code').forEach(function(b){hljs.highlightElement(b)});scroll()}}catch(e){if(e.message&&e.message.indexOf('JSON')===-1){aiDiv.querySelector('.mt').innerHTML='<div class="er">⚠️ '+esc(e.message)+'</div>';break}}}}
