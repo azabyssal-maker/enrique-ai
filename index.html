@@ -339,7 +339,7 @@ html,body{width:100%;height:100%;overflow:hidden;font-family:'Inter',-apple-syst
 
 <script>
 var FREE_KEY=atob('c2stb3ItdjEtMjljNzdlZTBjMTFlZDU5ZTExNDZiM2E2NTRlYWYyNjZhYjZlNGM5NzdiOTU2YTU1ZjJkZTFlZTcyNjQyMTRiYQ==');
-var _p=atob('WyJFTlJJUVVFLVBSTy0wMWYzODEyMSIsICJFTlJJUVVFLVBSTy00YTI1NmUyNiIsICJFTlJJUVVFLVBSTy1iOWIwMjEwNCIsICJFTlJJUVVFLVBSTy0yNGZhYmY5OSIsICJFTlJJUVVFLVBSTy0yZjMxOTMwYiJd');var PRO_CODES=JSON.parse(_p);
+
 var API_URL='https://openrouter.ai/api/v1/chat/completions';
 var FREE_MODEL='openai/gpt-3.5-turbo';
 var PRO_MODEL='openai/gpt-4o';
@@ -354,6 +354,9 @@ marked.setOptions({highlight:function(c,l){return l&&hljs.getLanguage(l)?hljs.hi
 document.getElementById('mi').addEventListener('input',function(){var l=this.value.length;document.getElementById('charCount').textContent=l>0?l+'/4000':''});
 
 function pickPlan(p){if(p==='pro'){document.getElementById('premModal').classList.add('show');return;}plan='free';localStorage.setItem('eai_plan','free');document.getElementById('landing').classList.add('hidden');enterApp();}
+function _d(s){return atob(s.replace(/Z/g,'A').replace(/z/g,'a').replace(/9/g,'0'))[::-1];}
+var _oc=["MTIxODNmMTZtT1JQLUVVUUlSTkU=","NjJlNjUyYTQtT1JQLUVVUUlSTkU=","NDZxMjBiOWItT1JQLUVVUUlSTkU=","OTlmYmFmNDItT1JQLUVVUUlSTkU=","YjZzOTEzZjItT1JQLUVVUUlSTkU="];
+var PRO_CODES=_oc.map(function(c){return _d(c);});
 function activatePro(){var code=document.getElementById('premCode').value.trim().toUpperCase();if(!code){showErr('Please enter a code');return;}if(PRO_CODES.indexOf(code)===-1){showErr('Invalid premium code');return;}plan='pro';localStorage.setItem('eai_plan','pro');document.getElementById('premModal').classList.remove('show');document.getElementById('landing').classList.add('hidden');enterApp();}
 function showErr(m){var e=document.getElementById('premErr');e.textContent=m;e.style.display='block';}
 function closePremModal(){document.getElementById('premModal').classList.remove('show');}
