@@ -1,4 +1,4 @@
-<!-- v1784738942 -->
+<!-- v1784786588 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -408,7 +408,16 @@ function doAuth(){
   }else{
     var users={};try{users=JSON.parse(localStorage.getItem('eai_users')||'{}')}catch(e){}
     var found=Object.keys(users).find(function(k){return users[k].email===email&&users[k].pass===pass});
-    if(!found){showErr('User not found. Please register first.');return}
+    if(!found){
+    // Auto-create account
+    var uid='u_'+Date.now();
+    users[uid]={name:email.split('@')[0],email:email,pass:pass,plan:'free'};
+    localStorage.setItem('eai_users',JSON.stringify(users));
+    localStorage.setItem('eai_user',uid);
+    plan='free';
+    enterLanding();
+    return;
+}
     localStorage.setItem('eai_user',found);
     plan=users[found].plan||'free';
     enterLanding();
@@ -603,7 +612,14 @@ async function send(){
     if(!r.ok){var er=await r.json().catch(function(){return{error:'Error'}});throw new Error(er.error?.message||'Error '+r.status)}
     var reader=r.body.getReader(),dec=new TextDecoder(),full='',buf='';
     while(true){var res=await reader.read();if(res.done)break;buf+=dec.decode(res.value,{stream:true});var lines=buf.split('\n');buf=lines.pop()||'';for(var i=0;i<lines.length;i++){var line=lines[i];if(!line.startsWith('data: '))continue;var d=line.slice(6).trim();if(d==='[DONE]'){convs[cid].push({role:'assistant',content:full});save();addCount();updateCounter();continue}try{var j=JSON.parse(d);if(j.error)throw new Error(typeof j.error==='string'?j.error:j.error.message);var c=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(c){full+=c;aiDiv.querySelector('.mt').innerHTML=marked.parse(full);aiDiv.querySelectorAll('pre code').forEach(function(b){hljs.highlightElement(b)});scroll()}}catch(e){if(e.message&&e.message.indexOf('JSON')===-1){aiDiv.querySelector('.mt').innerHTML='<div class="er">⚠️ '+esc(e.message)+'</div>';break}}}}
-  }catch(e){aiDiv.querySelector('.mt').innerHTML='<div class="er">⚠️ '+esc(e.message)+'</div>'}
+  }catch(e){
+    var errMsg=e.message||'Unknown error';
+    if(errMsg.indexOf('402')!==-1)errMsg='API quota exceeded. Please try again later.';
+    else if(errMsg.indexOf('401')!==-1)errMsg='API key error. Please contact admin.';
+    else if(errMsg.indexOf('429')!==-1)errMsg='Too many requests. Please wait a moment.';
+    else if(errMsg.indexOf('fetch')!==-1)errMsg='Network error. Check your internet connection.';
+    aiDiv.querySelector('.mt').innerHTML='<div class="er">⚠️ '+esc(errMsg)+'</div>';
+}
   busy=false;document.getElementById('sendBtn').disabled=false;input.focus();
 }
 
