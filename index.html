@@ -209,7 +209,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 <body>
 
 <!-- AUTH -->
-<div class="auth" id="authPage">
+<div class="auth hidden" id="authPage">
   <div class="auth-card">
     <div class="logo">🤖</div>
     <h2 id="authTitle">Create Account</h2>
@@ -344,7 +344,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 var K=atob('c2stb3ItdjEtMjljNzdlZTBjMTFlZDU5ZTExNDZiM2E2NTRlYWYyNjZhYjZlNGM5NzdiOTU2YTU1ZjJkZTFlZTcyNjQyMTRiYQ==');var KP=K;
 var H=['eeb1866d4559006f','904bfc256067d1b5','bee381cdf11834b2','9672e8a09afcbc13','a21035422a316549','f08cc9e29a642f2e'];
 var API='https://openrouter.ai/api/v1/chat/completions';
-var FM='openai/gpt-3.5-turbo',PM='google/gemini-2.0-flash-001';
+var FM='openai/gpt-3.5-turbo',PM='google/gemini-3.5-flash';
 var DAILY_LIMIT=50;
 
 var isReg=true,plan='free',cid=null,convs={},busy=false,pimgs=[];
@@ -622,14 +622,17 @@ async function send(){
 }
 
 (function(){
-  // Skip login, go straight to landing
-  var savedName=localStorage.getItem('eai_name');
-  if(savedName){
-    document.getElementById('userName').textContent=savedName;
-    enterLanding();
-    return;
-  }
+  // Always go straight to landing - no login needed
+  document.getElementById('authPage').classList.add('hidden');
+  document.getElementById('mainArea').classList.add('hidden');
   document.getElementById('landing').classList.remove('hidden');
+  var savedName=localStorage.getItem('eai_name')||'';
+  document.getElementById('nameInput').value=savedName;
+  plan=localStorage.getItem('eai_plan')||'free';
+  var tag=document.getElementById('planTag');
+  tag.textContent=plan==='pro'?'PRO':'FREE';
+  tag.className='pt '+plan;
+  updateCounter();
 })();
 document.getElementById('premModal').addEventListener('click',function(e){if(e.target===this)closePremModal()});
 </script>
