@@ -1,4 +1,4 @@
-<!-- v1784787078 -->
+<!-- v1784787241 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -602,7 +602,7 @@ async function send(){
     return m;
   });
   try{
-    var body={model:imgs.length?PM:model,messages:apiMsgs,stream:true,temperature:0.7,max_tokens:4000};
+    var body={model:imgs.length?PM:model,messages:apiMsgs,stream:true,temperature:0.7,max_tokens:2000};
     var r=await fetch(API,{method:'POST',headers:{'Authorization':'Bearer '+(plan==='pro'?KP:K),'Content-Type':'application/json','HTTP-Referer':'https://enrique-ai.github.io','X-Title':'ENRIQUE AI'},body:JSON.stringify(body)});
     if(!r.ok){var er=await r.json().catch(function(){return{error:'Error'}});throw new Error(er.error?.message||'Error '+r.status)}
     var reader=r.body.getReader(),dec=new TextDecoder(),full='',buf='';
