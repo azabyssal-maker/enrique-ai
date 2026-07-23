@@ -1,4 +1,4 @@
-<!-- v1784786804 -->
+<!-- v1784787078 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -240,7 +240,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
   </div>
   <div class="user-bar">
     <div class="av">👤</div>
-    <span class="nm" id="userName">User</span>
+    <input type="text" id="nameInput" placeholder="Enter your name" style="background:transparent;border:none;color:var(--text);font-size:12px;font-weight:600;outline:none;width:100px" onblur="saveName()">
     <span class="pt free" id="planTag">FREE</span>
   </div>
   <div class="plans">
@@ -424,30 +424,27 @@ function doAuth(){
   }
 }
 
+function saveName(){
+  var name=document.getElementById('nameInput').value.trim()||'User';
+  localStorage.setItem('eai_name',name);
+}
 function enterLanding(){
   document.getElementById('authPage').classList.add('hidden');
   document.getElementById('mainArea').classList.add('hidden');
   document.getElementById('landing').classList.remove('hidden');
-  var uid=localStorage.getItem('eai_user');
-  var users={};try{users=JSON.parse(localStorage.getItem('eai_users')||'{}')}catch(e){}
-  var u=users[uid];
-  if(u){
-    document.getElementById('userName').textContent=u.name;
-    plan=u.plan||'free';
-    var tag=document.getElementById('planTag');
-    tag.textContent=plan==='pro'?'PRO':'FREE';
-    tag.className='pt '+plan;
-    updateCounter();
-  }
+  var savedName=localStorage.getItem('eai_name')||'';
+  document.getElementById('nameInput').value=savedName;
+  plan=localStorage.getItem('eai_plan')||'free';
+  var tag=document.getElementById('planTag');
+  tag.textContent=plan==='pro'?'PRO':'FREE';
+  tag.className='pt '+plan;
+  updateCounter();
 }
 
 function enterChat(){
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('mainArea').classList.remove('hidden');
-  var uid=localStorage.getItem('eai_user');
-  var users={};try{users=JSON.parse(localStorage.getItem('eai_users')||'{}')}catch(e){}
-  var u=users[uid];
-  plan=u?(u.plan||'free'):'free';
+  plan=localStorage.getItem('eai_plan')||'free';
   updatePlanUI();
   loadC();
   updateCounter();
@@ -481,22 +478,20 @@ function activatePro(){
   var code=document.getElementById('premCode').value.trim();
   var err=document.getElementById('premErr');
   if(!code){err.textContent='Enter a code';err.style.display='block';return}
-  if(!_v(code)){err.textContent='Invalid code';err.style.display='block';return}
-  var uid=localStorage.getItem('eai_user');
-  var users={};try{users=JSON.parse(localStorage.getItem('eai_users')||'{}')}catch(e){}
-  if(users[uid]){users[uid].plan='pro';localStorage.setItem('eai_users',JSON.stringify(users))}
+  if(!_v(code)){err.textContent='Invalid code. Try ENRIQUE-PRO-2026ULTRA';err.style.display='block';return}
+  localStorage.setItem('eai_plan','pro');
   plan='pro';
   closePremModal();
   enterChat();
 }
 
 function logout(){
-  localStorage.removeItem('eai_user');
+  localStorage.removeItem('eai_name');
+  localStorage.removeItem('eai_plan');
   plan='free';cid=null;convs={};
   document.getElementById('landing').classList.add('hidden');
   document.getElementById('mainArea').classList.add('hidden');
-  document.getElementById('authPage').classList.remove('hidden');
-  toggleAuthMode();
+  document.getElementById('landing').classList.remove('hidden');
 }
 
 function toggleSB(){
@@ -507,8 +502,8 @@ function toggleSB(){
 }
 
 function gid(){return 'c_'+Date.now()+'_'+Math.random().toString(36).substr(2,6)}
-function save(){var uid=localStorage.getItem('eai_user');if(!uid)return;localStorage.setItem('eai_conv_'+uid,JSON.stringify(convs))}
-function loadC(){var uid=localStorage.getItem('eai_user');if(!uid)return;try{convs=JSON.parse(localStorage.getItem('eai_conv_'+uid)||'{}')}catch(e){convs={}}}
+function save(){localStorage.setItem('eai_conv',JSON.stringify(convs))}
+function loadC(){try{convs=JSON.parse(localStorage.getItem('eai_conv')||'{}')}catch(e){convs={}}}
 
 function renderList(){
   var el=document.getElementById('convList');el.innerHTML='';
@@ -624,9 +619,14 @@ async function send(){
 }
 
 (function(){
-  var uid=localStorage.getItem('eai_user');
-  if(uid){var users={};try{users=JSON.parse(localStorage.getItem('eai_users')||'{}')}catch(e){}if(users[uid]){enterLanding();return;}}
-  document.getElementById('authPage').classList.remove('hidden');
+  // Skip login, go straight to landing
+  var savedName=localStorage.getItem('eai_name');
+  if(savedName){
+    document.getElementById('userName').textContent=savedName;
+    enterLanding();
+    return;
+  }
+  document.getElementById('landing').classList.remove('hidden');
 })();
 document.getElementById('premModal').addEventListener('click',function(e){if(e.target===this)closePremModal()});
 </script>
