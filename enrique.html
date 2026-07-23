@@ -204,6 +204,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
   .mt{font-size:13px}
   .mbf{max-width:90%}
 }
+.code-btns{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
+.cb{padding:5px 10px;border:1px solid var(--border);border-radius:6px;background:var(--card2);color:var(--muted);font-size:10px;cursor:pointer;font-family:inherit;transition:all .2s}
+.cb:hover{border-color:var(--primary);color:var(--text)}
+.cp:hover{border-color:var(--green);color:var(--green)}
+.cc:hover{border-color:var(--primary);color:var(--primary)}
+.cd:hover{border-color:var(--gold);color:var(--gold)}
 </style>
 </head>
 <body>
@@ -555,10 +561,53 @@ function addMsg(role,content){
   var d=document.createElement('div');d.className='msg '+role;
   var av=role==='user'?'👤':'🤖';
   var html=content?(role==='user'?esc(content):marked.parse(content)):'<p></p>';
-  d.innerHTML='<div class="av">'+av+'</div><div class="mbf"><div class="mn2">'+(role==='user'?'You':'ENRIQUE AI')+'</div><div class="mt">'+html+'</div></div>';
+  var actions='';
+  if(role==='user'&&false){actions=''}
+  d.innerHTML='<div class="av">'+av+'</div><div class="mbf"><div class="mn2">'+(role==='user'?'You':'ENRIQUE AI')+'</div><div class="mt">'+html+'</div><div class="msg-actions"></div></div>';
   inner.appendChild(d);
-  if(role!=='user'&&content)d.querySelectorAll('pre code').forEach(function(b){hljs.highlightElement(b)});
+  if(role!=='user'&&content){
+    d.querySelectorAll('pre code').forEach(function(b){hljs.highlightElement(b)});
+    addCodeActions(d);
+  }
   scroll();return d;
+}
+
+function addCodeActions(msgDiv){
+  var codes=msgDiv.querySelectorAll('pre code');
+  if(codes.length===0)return;
+  codes.forEach(function(codeEl,i){
+    var lang=(codeEl.className.match(/language-(\w+)/)||['',''])[1];
+    var code=codeEl.textContent;
+    var btns=document.createElement('div');btns.className='code-btns';
+    // Preview button for HTML
+    if(lang==='html'||code.indexOf('<html')!==-1||code.indexOf('<!DOCTYPE')!==-1){
+      var previewBtn=document.createElement('button');previewBtn.className='cb cp';previewBtn.textContent='👁️ Preview';
+      previewBtn.onclick=function(){previewHTML(code)};
+      btns.appendChild(previewBtn);
+    }
+    // Copy button
+    var copyBtn=document.createElement('button');copyBtn.className='cb cc';copyBtn.textContent='📋 Copy';
+    copyBtn.onclick=function(){navigator.clipboard.writeText(code).then(function(){copyBtn.textContent='✅ Copied!';setTimeout(function(){copyBtn.textContent='📋 Copy'},1500)})};
+    btns.appendChild(copyBtn);
+    // Download button for HTML
+    if(lang==='html'||code.indexOf('<html')!==-1||code.indexOf('<!DOCTYPE')!==-1){
+      var dlBtn=document.createElement('button');dlBtn.className='cb cd';dlBtn.textContent='💾 Download';
+      dlBtn.onclick=function(){downloadHTML(code)};
+      btns.appendChild(dlBtn);
+    }
+    codeEl.parentNode.insertBefore(btns,codeEl.nextSibling);
+  });
+}
+
+function previewHTML(code){
+  var w=window.open('','_blank');
+  w.document.write(code);
+  w.document.close();
+}
+
+function downloadHTML(code){
+  var blob=new Blob([code],{type:'text/html'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='website.html';a.click();
 }
 
 function esc(t){var d=document.createElement('div');d.textContent=t;return d.innerHTML}
