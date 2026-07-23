@@ -255,7 +255,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
       <div class="pi">⭐</div>
       <h3>Premium</h3>
       <div class="pr">$9.99 <span>/ month</span></div>
-      <ul><li>Unlimited messages</li><li>ENRIQUE AI Pro engine</li><li>Advanced analysis</li><li>Priority speed</li></ul>
+      <ul><li>Unlimited messages</li><li>ENRIQUE AI Pro (Claude 3.5)</li><li>Advanced analysis</li><li>Priority speed</li></ul>
       <button class="pbtn pro">Get Premium →</button>
     </div>
   </div>
@@ -341,7 +341,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 var K=atob('c2stb3ItdjEtMjljNzdlZTBjMTFlZDU5ZTExNDZiM2E2NTRlYWYyNjZhYjZlNGM5NzdiOTU2YTU1ZjJkZTFlZTcyNjQyMTRiYQ==');var KP=K;
 var H=['eeb1866d4559006f','904bfc256067d1b5','bee381cdf11834b2','9672e8a09afcbc13','a21035422a316549','f08cc9e29a642f2e'];
 var API='https://openrouter.ai/api/v1/chat/completions';
-var FM='openai/gpt-3.5-turbo',PM='anthropic/claude-3.5-haiku';
+var FM='openai/gpt-3.5-turbo',PM='anthropic/claude-3.5-sonnet';
 var DAILY_LIMIT=50;
 
 var isReg=true,plan='free',cid=null,convs={},busy=false,pimgs=[];
@@ -585,7 +585,7 @@ async function send(){
   }
   busy=true;document.getElementById('sendBtn').disabled=true;input.value='';autoResize(input);
   loadC();
-  if(!cid){cid=gid();convs[cid]=[{role:'system',content:plan==='pro'?'You are ENRIQUE AI Pro, an expert AI assistant specialized in coding and website creation. You can: 1) CREATE complete websites with HTML, CSS, JavaScript - provide FULL working code in code blocks. 2) BUILD web apps, mobile apps, games. 3) WRITE any programming language. 4) DEBUG and OPTIMIZE code. 5) EXPLAIN complex concepts. 6) DO advanced math and science. 7) TRANSLATE between languages. 8) ANALYZE images. When asked to build/create something, ALWAYS provide COMPLETE, WORKING code that can be copied and used directly. Format code with language tags. Be detailed, thorough, and helpful.':'You are ENRIQUE AI, a helpful AI assistant. You can help with coding, writing, math, translation, image analysis, creating simple websites, and answering questions. Format responses with Markdown including code blocks when relevant. Be helpful, concise, and friendly.'}]}
+  if(!cid){cid=gid();convs[cid]=[{role:'system',content:plan==='pro'?'You are ENRIQUE AI Pro, an expert AI coding assistant. You can: 1) CREATE complete websites (HTML/CSS/JS) - provide FULL working code. 2) BUILD web apps, mobile apps, games with complete code. 3) WRITE any programming language (Python, JavaScript, Java, C++, etc). 4) DEBUG and OPTIMIZE code. 5) EXPLAIN complex concepts clearly. 6) DO advanced math and science. 7) TRANSLATE between languages. 8) ANALYZE images. When asked to build/create something, ALWAYS provide COMPLETE, WORKING code that can be copied and used directly. Format code with language tags (```html, ```javascript, etc). Be detailed, thorough, and helpful like a professional developer.':'You are ENRIQUE AI, a helpful AI assistant. You can help with coding, writing, math, translation, image analysis, creating simple websites, and answering questions. Format responses with Markdown including code blocks when relevant. Be helpful, concise, and friendly.'}]}
   convs[cid].push({role:'user',content:msg});
   addMsg('user',pimgs.length?msg+' (🖼️ '+pimgs.length+')':msg);
   renderList();
