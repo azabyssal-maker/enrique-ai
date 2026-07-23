@@ -177,6 +177,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
 .wc h2 span{background:linear-gradient(90deg,var(--primary),var(--pink));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .wc>p{color:var(--muted);font-size:12px}
 .sg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:14px;max-width:380px;margin-left:auto;margin-right:auto}
+@media(max-width:400px){.sg{grid-template-columns:1fr}}
 .su{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:left;cursor:pointer;font-size:10px;color:var(--muted);transition:border .2s,transform .1s}
 .su:active{transform:scale(.97);border-color:var(--primary);color:var(--text)}
 .su:hover{border-color:var(--primary)}
@@ -312,10 +313,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);heigh
         <h2>Hi, I'm <span>ENRIQUE AI</span></h2>
         <p>Chat, code, translate, and analyze images!</p>
         <div class="sg">
+          <div class="su" onclick="sendSug('Create a modern landing page with HTML and CSS')"><strong>🌐 Website</strong>Landing page</div>
+          <div class="su" onclick="sendSug('Build a portfolio website with HTML CSS JavaScript')"><strong>💼 Portfolio</strong>Personal site</div>
+          <div class="su" onclick="sendSug('Create a todo list app with HTML CSS JavaScript')"><strong>📝 App</strong>Todo list</div>
           <div class="su" onclick="sendSug('Write a Python fibonacci function')"><strong>🐍 Code</strong>Fibonacci</div>
           <div class="su" onclick="sendSug('Explain blockchain simply')"><strong>💡 Explain</strong>Blockchain</div>
           <div class="su" onclick="sendSug('Write a poem about the night sky')"><strong>✍️ Creative</strong>Poem</div>
-          <div class="su" onclick="sendSug('Build me a landing page HTML CSS')"><strong>🌐 Build</strong>Landing page</div>
         </div>
       </div>
     </div>
@@ -585,7 +588,7 @@ async function send(){
   }
   busy=true;document.getElementById('sendBtn').disabled=true;input.value='';autoResize(input);
   loadC();
-  if(!cid){cid=gid();convs[cid]=[{role:'system',content:plan==='pro'?'You are ENRIQUE AI Pro, an expert AI coding assistant. You can: 1) CREATE complete websites (HTML/CSS/JS) - provide FULL working code. 2) BUILD web apps, mobile apps, games with complete code. 3) WRITE any programming language (Python, JavaScript, Java, C++, etc). 4) DEBUG and OPTIMIZE code. 5) EXPLAIN complex concepts clearly. 6) DO advanced math and science. 7) TRANSLATE between languages. 8) ANALYZE images. When asked to build/create something, ALWAYS provide COMPLETE, WORKING code that can be copied and used directly. Format code with language tags (```html, ```javascript, etc). Be detailed, thorough, and helpful like a professional developer.':'You are ENRIQUE AI, a helpful AI assistant. You can help with coding, writing, math, translation, image analysis, creating simple websites, and answering questions. Format responses with Markdown including code blocks when relevant. Be helpful, concise, and friendly.'}]}
+  if(!cid){cid=gid();convs[cid]=[{role:'system',content:plan==='pro'?'You are ENRIQUE AI Pro, an expert AI assistant like a professional developer. When users ask you to create a website, provide COMPLETE, WORKING HTML/CSS/JS code that can be copied and used directly. You can: CREATE websites, BUILD web apps, WRITE code in any language, DEBUG and OPTIMIZE code, EXPLAIN concepts, DO math, TRANSLATE languages, ANALYZE images. Always provide FULL working code with language tags (```html, ```javascript). Be detailed, thorough, and helpful.':'You are ENRIQUE AI, a helpful AI assistant. When users ask you to create a website, provide complete HTML/CSS code in a code block that they can copy and use. You can help with coding, writing, math, translation, and answering questions. Format responses with Markdown including code blocks with language tags. Be helpful, concise, and friendly.'}]}
   convs[cid].push({role:'user',content:msg});
   addMsg('user',pimgs.length?msg+' (🖼️ '+pimgs.length+')':msg);
   renderList();
